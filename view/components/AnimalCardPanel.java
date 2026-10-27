@@ -1,45 +1,32 @@
 package com.pawth.view.components;
 
-import com.pawth.config.SystemConstants;
 import com.pawth.model.Animal;
 import java.awt.*;
 import javax.swing.*;
 
-public class AnimalCardPanel extends JPanel {
-
-    public AnimalCardPanel(Animal animal, Runnable onApplyClicked) {
-        setLayout(new BorderLayout(10, 10));
-        setBackground(SystemConstants.COLOR_CARD_BG);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(SystemConstants.COLOR_BORDER, 1),
-            BorderFactory.createEmptyBorder(12, 12, 12, 12)
-        ));
-
-        // Details Body
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setOpaque(false);
-
-        JLabel nameLabel = new JLabel(animal.getName());
-        nameLabel.setFont(SystemConstants.FONT_HEADER);
-
-        JLabel breedLabel = new JLabel(animal.getBreed() + " · " + animal.getAgeYears() + " yrs");
-        breedLabel.setFont(SystemConstants.FONT_SMALL);
-        breedLabel.setForeground(SystemConstants.COLOR_TEXT_MUTED);
-
-        JLabel matchLabel = new JLabel(animal.getMatchPercentage() + "% Match");
-        matchLabel.setFont(SystemConstants.FONT_SMALL.deriveFont(Font.BOLD));
-        matchLabel.setForeground(SystemConstants.BADGE_SUCCESS);
-
-        infoPanel.add(nameLabel);
-        infoPanel.add(breedLabel);
-        infoPanel.add(Box.createVerticalStrut(5));
-        infoPanel.add(matchLabel);
-
-        CustomButton applyBtn = new CustomButton("Apply");
-        applyBtn.addActionListener(e -> onApplyClicked.run());
-
-        add(infoPanel, BorderLayout.CENTER);
-        add(applyBtn, BorderLayout.SOUTH);
+public class AnimalCardPanel extends Ui.Card {
+    public AnimalCardPanel(Animal animal, Runnable onOpen) {
+        setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
+        Ui.add(this, Ui.photo(animal.getPhotoUrl(), 273, 290));
+        Ui.gap(this, 14);
+        JPanel details = Ui.column();
+        details.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 16));
+        Ui.add(
+                details,
+                Ui.row(
+                        Ui.label(animal.getName(), 19, Ui.INK),
+                        Ui.badge(animal.getMatchPercentage() + "% match")));
+        Ui.gap(details, 10);
+        Ui.add(
+                details,
+                Ui.label(
+                        animal.getBreed() + " · " + animal.getAgeYears() + " years", 10, Ui.MUTED));
+        Ui.gap(details, 12);
+        Ui.add(details, Ui.badge(animal.getAdoptionStatus().name()));
+        Ui.gap(details, 12);
+        Ui.add(details, Ui.paragraph(animal.getPersonalityTraits(), 190));
+        Ui.gap(details, 16);
+        Ui.add(details, Ui.secondary("View profile", onOpen));
+        Ui.add(this, details);
     }
 }

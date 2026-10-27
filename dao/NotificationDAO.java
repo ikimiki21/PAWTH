@@ -13,24 +13,25 @@ public class NotificationDAO {
         String sql = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                list.add(new Notification(
-                    rs.getInt("notification_id"),
-                    rs.getInt("user_id"),
-                    rs.getString("title"),
-                    rs.getString("message"),
-                    Notification.Category.valueOf(rs.getString("category")),
-                    rs.getBoolean("is_read"),
-                    rs.getTimestamp("created_at")
-                ));
+                list.add(
+                        new Notification(
+                                rs.getInt("notification_id"),
+                                rs.getInt("user_id"),
+                                rs.getString("title"),
+                                rs.getString("message"),
+                                Notification.Category.valueOf(rs.getString("category")),
+                                rs.getBoolean("is_read"),
+                                rs.getTimestamp("created_at")));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(
+                    "Database operation failed. Check the local MySQL connection.", e);
         }
         return list;
     }
@@ -38,12 +39,12 @@ public class NotificationDAO {
     public boolean markAllAsRead(int userId) {
         String sql = "UPDATE notifications SET is_read = TRUE WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(
+                    "Database operation failed. Check the local MySQL connection.", e);
         }
-        return false;
     }
 }
